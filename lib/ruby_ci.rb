@@ -7,8 +7,6 @@ require_relative "ruby_ci/exceptions"
 require "async"
 require "async/http/endpoint"
 require "async/websocket/client"
-require "async/logger"
-Async.logger.debug!
 
 module RubyCI
   class Error < StandardError; end
