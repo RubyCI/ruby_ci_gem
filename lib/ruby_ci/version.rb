@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module RubyCi
-  VERSION = "0.1.0"
+module RubyCI
+  VERSION = "0.1.1"
 end
