@@ -162,7 +162,7 @@ module RubyCI
                                      author: RubyCI.configuration.author.to_json
                                    })
 
-      url = "ws://#{RubyCI.configuration.api_url}/test_orchestrators/socket/websocket?#{params}"
+      url = "wss://#{RubyCI.configuration.api_url}/test_orchestrators/socket/websocket?#{params}"
 
       Async::HTTP::Endpoint.parse(url)
     end
