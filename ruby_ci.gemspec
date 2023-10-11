@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "Ruby wrapper for creating RubyCI integrations"
   spec.description   = "Ruby wrapper for creating RubyCI integrations"
-  spec.homepage      = "https://github.com/alexvko/ruby_ci-rb"
+  spec.homepage      = "https://github.com/RubyCI/ruby_ci_gem"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 2.4.0"
 
