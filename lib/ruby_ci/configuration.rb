@@ -35,21 +35,21 @@ module RubyCI
     end
 
     def guess_build_id
-      %w[GITHUB_RUN_ID BUILD_ID CIRCLE_BUILD_NUM].find do |keyword|
+      %w[RBCI_BUILD_ID GITHUB_RUN_ID BUILD_ID CIRCLE_BUILD_NUM].find do |keyword|
         key = ENV.keys.find { |k| k[keyword] }
         break ENV[key] if key && ENV[key]
       end || guess_commit
     end
 
     def guess_commit
-      %w[_COMMIT _SHA1 _SHA].find do |keyword|
+      %w[RBCI_COMMIT _COMMIT _SHA1 _SHA].find do |keyword|
         key = ENV.keys.find { |k| k[keyword] }
         break ENV[key] if key && ENV[key]
       end || `git rev-parse --short HEAD`.chomp
     end
 
     def guess_branch
-      %w[_BRANCH _REF].find do |keyword|
+      %w[RBCI_BRANCH _BRANCH _REF].find do |keyword|
         key = ENV.keys.find { |k| k[keyword] }
         break ENV[key] if key && ENV[key]
       end || `git rev-parse --abbrev-ref HEAD`.chomp
