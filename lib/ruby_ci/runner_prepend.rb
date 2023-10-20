@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require_relative "rspec_formatter"
+require_relative "extract_definitions"
 
 module RubyCI
   module RunnerPrepend
