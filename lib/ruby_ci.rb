@@ -169,7 +169,7 @@ module RubyCI
 
       url = "wss://#{RubyCI.configuration.api_url}/test_orchestrators/socket/websocket?#{params}"
 
-      Async::HTTP::Endpoint.parse(url)
+      Async::HTTP::Endpoint.parse(url, alpn_protocols: Async::HTTP::Protocol::HTTP11.names)
     end
   end
 end
