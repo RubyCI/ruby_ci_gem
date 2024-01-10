@@ -20,12 +20,16 @@ module RubyCI
       yield(configuration)
     end
 
-    def ws
-      @ws ||= WebSocket.new
+    def rspec_ws
+      @rspec_ws ||= WebSocket.new('rspec')
     end
 
-    def await
-      ws.await
+    def minitest_ws
+      @minitest_ws ||= WebSocket.new('minitest')
+    end
+
+    def rspec_await
+      rspec_ws.await
     end
 
     def debug(msg)
@@ -35,13 +39,14 @@ module RubyCI
 
   class WebSocket
     attr_reader :node_index
-    attr_accessor :connection, :task
+    attr_accessor :connection, :task, :run_key
 
     SUPPORTED_EVENTS = %i[enq_request deq].freeze
 
-    def initialize
+    def initialize(run_key)
       @on = {}
       @ref = 0
+      @run_key = run_key
     end
 
     def on(event, &block)
@@ -148,13 +153,13 @@ module RubyCI
     end
 
     def topic
-      "test_orchestrator:#{RubyCI.configuration.run_key}-#{RubyCI.configuration.build_id}"
+      "test_orchestrator:#{run_key}-#{RubyCI.configuration.build_id}"
     end
 
     def endpoint
       params = URI.encode_www_form({
                                      build_id: RubyCI.configuration.build_id,
-                                     run_key: RubyCI.configuration.run_key,
+                                     run_key: run_key,
                                      secret_key: RubyCI.configuration.secret_key,
                                      branch: RubyCI.configuration.branch,
                                      commit: RubyCI.configuration.commit,
