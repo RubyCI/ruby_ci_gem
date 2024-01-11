@@ -32,6 +32,10 @@ module RubyCI
       rspec_ws.await
     end
 
+    def minitest_await
+      minitest_ws.await
+    end
+
     def debug(msg)
       puts "\n\e[36mDEBUG: \e[0m #{msg}\n" if ENV["RUBY_CI_DEBUG"]
     end
