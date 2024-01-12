@@ -18,7 +18,7 @@ module RubyCI
 
       RubyCI.configure { |c| c.run_key = "rspec" }
 
-      RubyCI.ws.on(:enq_request) do
+      RubyCI.rspec_ws.on(:enq_request) do
         example_groups.reduce({}) do |example_group_descriptions, (file, example_groups)|
           example_groups.each do |example_group|
             data = RubyCI::ExtractDescriptions.new.call(example_group, count: true)
@@ -47,7 +47,7 @@ module RubyCI
 
           reporter.register_listener(formatter, :example_finished)
 
-          RubyCI.ws.on(:deq) do |tests|
+          RubyCI.rspec_ws.on(:deq) do |tests|
             tests.each do |test|
               file, scoped_id = test.split(":", 2)
               Thread.current[:rubyci_scoped_ids] = scoped_id
@@ -61,7 +61,7 @@ module RubyCI
             formatter.dump_and_reset
           end
 
-          RubyCI.await
+          RubyCI.rspec_await
 
           formatter.passed?
         end
