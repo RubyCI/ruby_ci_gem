@@ -1,11 +1,12 @@
 module Minitest
   module Reporters
     class RubyciReporter
-      attr_accessor :tests, :test_results
+      attr_accessor :tests, :test_results, :ids
 
       def initialize
         @tests = {}
         @test_results = {}
+        @ids = {}
 
         RubyCI.minitest_ws.on(:enq_request) do
           tests
@@ -17,12 +18,16 @@ module Minitest
       end
 
       def prerecord(klass, name)
-        id = test_id(name)
+        description = test_description(name)
         path = test_path(klass.name)
 
-        test_results[path] ||= { run_time: 0.0, file_status: 'pending', test_count: 0, test_counters: { failed: 0, passed: 0, pending: 0 }, '1' => {} }
+        test_results[path] ||= { run_time: 0.0, file_status: 'pending', test_count: 0, test_counters: { failed: 0, passed: 0, pending: 0 }, '1' => { description: klass.name } }
         test_results[path][:test_count] += 1
-        test_results[path]['1'][id] ||= { status: 'pending' }
+
+        id = (test_results[path]['1'].keys.size + 1).to_s
+        ids[description] = id
+
+        test_results[path]['1'][id] ||= { status: 'pending', description: description }
         test_results[path]['1'][id][:start] = Minitest.clock_time
 
         tests[path] ||= { run_time: 0.0, file_status: 'pending', test_count: 0, test_counters: { failed: 0, passed: 0, pending: 0 }, '1' => {} }
@@ -31,7 +36,8 @@ module Minitest
       end
 
       def record(result)
-        id = test_id(result.name)
+        description = test_description(result.name)
+        id = ids[description]
         path = test_path(result.klass)
 
         test_results[path]['1'][id][:end] = Minitest.clock_time
@@ -45,6 +51,7 @@ module Minitest
         test_results.each do |path, file_results|
           file_status = 'pending'
           file_results['1'].each do |id, test_result|
+            next if id == :description
             if (test_result[:status] == 'passed') && (file_status != 'failed')
               file_status = 'passed'
             elsif file_status == 'failed'
@@ -63,7 +70,7 @@ module Minitest
 
       private
 
-      def test_id(name)
+      def test_description(name)
         test_name = name.split('test_').last
         test_name = test_name[2..-1] if test_name.starts_with?(': ')
 
@@ -71,7 +78,7 @@ module Minitest
       end
 
       def test_path(klass)
-        return Object.const_source_location(klass)[0].gsub(Regexp.new("^#{::Rails.root}/"), '')
+        return "./#{Object.const_source_location(klass)[0].gsub(Regexp.new("^#{::Rails.root}/"), '')}"
       end
 
       def result_status(result)
