@@ -28,6 +28,22 @@ module RubyCI
       @minitest_ws ||= WebSocket.new('minitest')
     end
 
+    def report_simplecov(results)
+      data = {
+        build_id: RubyCI.configuration.build_id,
+        run_key: 'simplecov',
+        secret_key: RubyCI.configuration.secret_key,
+        branch: RubyCI.configuration.branch,
+        commit: RubyCI.configuration.commit,
+        commit_msg: RubyCI.configuration.commit_msg,
+        author: RubyCI.configuration.author.to_json,
+        content: results
+      }
+
+      uri = URI('https://fast.ruby.ci/api/runs')
+      res = Net::HTTP.post_form(uri, data)
+    end
+
     def rspec_await
       rspec_ws.await
     end
