@@ -3,7 +3,7 @@ module RubyCI
     module Reporting
       def self.included base
         base.instance_eval do
-          if ENV['RUBY_CI_SECRET_KEY'].present?
+          unless (ENV['RUBY_CI_SECRET_KEY'] || '').empty?
             def write_last_run(result)
               ::SimpleCov::LastRun.write(result:
                 result.coverage_statistics.transform_values do |stats|
