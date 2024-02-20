@@ -42,6 +42,10 @@ module RubyCI
 
       uri = URI('https://fast.ruby.ci/api/runs')
       res = Net::HTTP.post_form(uri, data)
+
+      puts res.inspect
+
+      return res
     end
 
     def rspec_await
