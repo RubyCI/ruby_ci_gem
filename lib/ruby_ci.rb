@@ -35,7 +35,7 @@ module RubyCI
     end
 
     def report_ruby_critic(compressed_data, status)
-      data = report_options('rubycritic', compressed_data)
+      data = report_options('ruby_critic', compressed_data)
       data[:status] = status
 
       uri = URI('https://fast.ruby.ci/api/runs')
