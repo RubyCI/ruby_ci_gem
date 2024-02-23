@@ -7,6 +7,7 @@ require_relative "ruby_ci/exceptions"
 require "async"
 require "async/http/endpoint"
 require "async/websocket/client"
+require "net/http"
 
 module RubyCI
   class Error < StandardError; end
@@ -29,16 +30,13 @@ module RubyCI
     end
 
     def report_simplecov(results)
-      data = {
-        build_id: RubyCI.configuration.build_id,
-        run_key: 'simplecov',
-        secret_key: RubyCI.configuration.secret_key,
-        branch: RubyCI.configuration.branch,
-        commit: RubyCI.configuration.commit,
-        commit_msg: RubyCI.configuration.commit_msg,
-        author: RubyCI.configuration.author.to_json,
-        content: results
-      }
+      uri = URI('https://fast.ruby.ci/api/runs')
+      res = Net::HTTP.post_form(uri, report_options('simplecov', results))
+    end
+
+    def report_ruby_critic(compressed_data, status)
+      data = report_options('ruby_critic', compressed_data)
+      data[:status] = status
 
       uri = URI('https://fast.ruby.ci/api/runs')
       res = Net::HTTP.post_form(uri, data)
@@ -54,6 +52,19 @@ module RubyCI
 
     def debug(msg)
       puts "\n\e[36mDEBUG: \e[0m #{msg}\n" if ENV["RUBY_CI_DEBUG"]
+    end
+
+    def report_options(run_key, content)
+      {
+        build_id: RubyCI.configuration.build_id,
+        run_key: run_key,
+        secret_key: RubyCI.configuration.secret_key,
+        branch: RubyCI.configuration.branch,
+        commit: RubyCI.configuration.commit,
+        commit_msg: RubyCI.configuration.commit_msg,
+        author: RubyCI.configuration.author.to_json,
+        content: content
+      }
     end
   end
 
