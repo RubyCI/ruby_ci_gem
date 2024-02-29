@@ -30,16 +30,15 @@ module RubyCI
     end
 
     def report_simplecov(results)
-      uri = URI('https://fast.ruby.ci/api/runs')
-      res = Net::HTTP.post_form(uri, report_options('simplecov', results))
+      post_report(report_options('simplecov', results))
     end
 
     def report_ruby_critic(compressed_data, status)
-      data = report_options('ruby_critic', compressed_data)
-      data[:status] = status
+      post_report(report_options('ruby_critic', compressed_data).merge({ status: status }))
+    end
 
-      uri = URI('https://fast.ruby.ci/api/runs')
-      res = Net::HTTP.post_form(uri, data)
+    def report_brakeman(compressed_data, status)
+      post_report(report_options('brakeman', compressed_data).merge({ status: status }))
     end
 
     def rspec_await
@@ -65,6 +64,11 @@ module RubyCI
         author: RubyCI.configuration.author.to_json,
         content: content
       }
+    end
+
+    def post_report(data)
+      uri = URI('https://fast.ruby.ci/api/runs')
+      res = Net::HTTP.post_form(uri, data)
     end
   end
 
