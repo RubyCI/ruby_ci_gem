@@ -43,9 +43,19 @@ module RubyCI
             return @configuration.failure_exit_code
           end
 
-          formatter = RubyCI::RspecFormatter.new
+          formatter = RubyCI::RspecFormatter.new(STDOUT)
 
           reporter.register_listener(formatter, :example_finished)
+          if ENV['RBCI_REMOTE_TESTS'] == 'true'
+            reporter.register_listener(formatter, :start)
+            reporter.register_listener(formatter, :example_group_started)
+            reporter.register_listener(formatter, :example_started)
+            reporter.register_listener(formatter, :example_passed)
+            reporter.register_listener(formatter, :example_failed)
+            reporter.register_listener(formatter, :example_pending)
+            reporter.register_listener(formatter, :example_group_finished)
+            reporter.register_listener(formatter, :close)
+          end
 
           RubyCI.rspec_ws.on(:deq) do |tests|
             tests.each do |test|
