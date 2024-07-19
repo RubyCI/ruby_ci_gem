@@ -67,7 +67,12 @@ module RubyCI
     end
 
     def post_report(data)
-      uri = URI('https://fast.ruby.ci/api/runs')
+      uri = URI("#{RubyCI.configuration.rubyci_api_url}/api/runs")
+      res = Net::HTTP.post_form(uri, data)
+    end
+
+    def send_events(data)
+      uri = URI("#{RubyCI.configuration.rubyci_main_url}/api/v1/gitlab/events")
       res = Net::HTTP.post_form(uri, data)
     end
   end
