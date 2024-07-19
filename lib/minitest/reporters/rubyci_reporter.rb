@@ -1,5 +1,28 @@
 module Minitest
   module Reporters
+    class Suite
+      attr_reader :name
+      def initialize(name)
+        @name = name
+      end
+
+      def ==(other)
+        name == other.name
+      end
+
+      def eql?(other)
+        self == other
+      end
+
+      def hash
+        name.hash
+      end
+
+      def to_s
+        name.to_s
+      end
+    end
+
     class RubyciReporter
       attr_accessor :tests, :test_results, :ids
 
@@ -7,14 +30,38 @@ module Minitest
         @tests = {}
         @test_results = {}
         @ids = {}
+        @events = []
 
-        RubyCI.minitest_ws.on(:enq_request) do
-          tests
-        end
+        $stdout = StringIO.new()
 
-        RubyCI.minitest_ws.on(:deq) do |api_tests|
-          test_results
+        if ENV['RBCI_REMOTE_TESTS'] != 'true'
+          RubyCI.minitest_ws.on(:enq_request) do
+            tests
+          end
+
+          RubyCI.minitest_ws.on(:deq) do |api_tests|
+            test_results
+          end
         end
+      end
+
+      def start
+        test_count = Runnable.runnables.sum { |s| s.runnable_methods.count }
+        msg('start', { test_count: test_count })
+      end
+      
+      def get_output
+        return if $stdout.pos == 0
+        $stdout.rewind
+        res = $stdout.read
+        $stdout.flush
+        $stdout.rewind
+        return unless res
+        res.strip.chomp if res.strip.chomp != ""
+      end
+      
+      def before_test(test)
+        $stdout = StringIO.new()
       end
 
       def prerecord(klass, name)
@@ -36,6 +83,7 @@ module Minitest
       end
 
       def record(result)
+        test_finished(result)
         description = test_description(result.name)
         id = ids[description]
         path = test_path(result.klass)
@@ -61,14 +109,132 @@ module Minitest
           test_results[path][:file_status] = file_status
         end
 
-        RubyCI.minitest_await
+
+        if ENV['RBCI_REMOTE_TESTS'] == 'true'
+          send_events
+        else
+          RubyCI.minitest_await
+        end
       end
 
       def method_missing(method, *args)
         return
       end
+      
+      protected
+
+      def before_suite(suite)
+      end
+
+      def after_suite(_suite)
+      end
+
+      def record_print_status(test)
+        test_name = test.name.gsub(/^test_: /, "test:")
+        print pad_test(test_name)
+        print_colored_status(test)
+        print(" (%.2fs)" % test.time) unless test.time.nil?
+        puts
+      end
+      
+      def record_print_failures_if_any(test)
+        if !test.skipped? && test.failure
+          print_info(test.failure, test.error?)
+          puts
+        end
+      end
+      
+      def screenshots_base64(output)
+        return unless output
+        img_path = output&.scan(/\\[Screenshot Image\\]: (.*)$/)&.flatten&.first&.strip&.chomp ||
+          output&.scan(/\\[Screenshot\\]: (.*)$/)&.flatten&.first&.strip&.chomp
+
+        if img_path && File.exist?(img_path)
+          STDOUT.puts "SCREENSHOT!"
+          Base64.strict_encode64(File.read(img_path))
+        end
+      end
+      
+      def test_finished(test)
+        output = get_output
+
+        location = if !test.source_location.join(":").start_with?(::Rails.root.join('vendor').to_s)
+                    test.source_location.join(":")
+                    else
+                    if (file = `cat #{::Rails.root.join('vendor', 'bundle', 'minitest_cache_file').to_s} | grep "#{test.klass} => "`.split(" => ").last&.chomp)
+                      file + ":"
+                    else
+                      file = `grep -rw "#{::Rails.root.to_s}" -e "#{test.klass} "`.split(":").first
+                      `echo "#{test.klass} => #{file}" >> #{::Rails.root.join('vendor', 'bundle', 'minitest_cache_file').to_s}`
+                      file + ":"
+                    end
+                    end
+
+        fully_formatted = if test.failure
+                            fully_formatted = "\n" + test.failure.message.split("\n").first
+
+                            test.failure.backtrace.each do |l|
+                              if !l["/cache/"]
+                                fully_formatted << "\n    " + cyan + l + "\033[0m"
+                              end
+                            end
+
+                            fully_formatted
+                          end
+
+                          output_inside = output&.split("\n")&.select do |line|
+                            !line["Screenshot"]
+                          end&.join("\n")
+        event_data = {
+          test_class: Suite.new(test.klass),
+          test_name: test.name.gsub(/^test_\\d*/, "").gsub(/^test_: /, "test:").gsub(/^_/, "").strip,
+          assertions_count: test.assertions,
+          location: location,
+          status: status(test),
+          run_time: test.time,
+          fully_formatted: fully_formatted,
+          output_inside: output_inside,
+          screenshots_base64: [screenshots_base64(output)]
+        }
+
+        msg('test_finished', event_data)
+        if ENV['RBCI_REMOTE_TESTS'] == 'true'
+          send_events if @events.length >= 10
+        end
+      end
+      
+      def status(test)
+        if test.passed?
+          "passed"
+        elsif test.error?
+          "error"
+        elsif test.skipped?
+          "skipped"
+        elsif test.failure
+          "failed"
+        else
+          raise("Status not found")
+        end
+      end
 
       private
+
+      def msg(event, data)
+        @events << ["minitest_#{event}".upcase, data]   
+      end
+
+      def send_events
+        return unless @events.length > 0
+    
+        json_events = {
+          build_id: RubyCI.configuration.orig_build_id,
+          compressed_data: Base64.strict_encode64(Zlib::Deflate.deflate(JSON.fast_generate(@events), 9)),
+        }
+  
+        RubyCI.send_events(json_events)
+  
+        @events = []
+      end
 
       def test_description(name)
         test_name = name.split('test_').last
