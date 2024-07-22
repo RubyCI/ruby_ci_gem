@@ -72,7 +72,7 @@ module RubyCI
     end
 
     def send_events(data)
-      uri = URI("#{RubyCI.configuration.rubyci_main_url}/api/v1/gitlab/events")
+      uri = URI("#{RubyCI.configuration.rubyci_main_url}/api/v1/gitlab_events")
       res = Net::HTTP.post_form(uri, data)
     end
   end
