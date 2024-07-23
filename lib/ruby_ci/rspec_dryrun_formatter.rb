@@ -103,7 +103,7 @@ module RubyCI
     end
   
     def msg(event, data)
-      @events << ["rspec_dryrun_#{event}".upcase, data]
+      @events << ["rspec_dryrun_#{event}".upcase, ['0', data]]
     end
   
     def get_scope_id(metadata)

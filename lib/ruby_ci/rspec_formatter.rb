@@ -34,6 +34,10 @@ module RubyCI
       Timecop.frozen?
     end
 
+    def rspec_runner_index
+      ENV["TEST_ENV_NUMBER"]
+    end
+
     def send_events
       @should_send_events = false
   
@@ -242,7 +246,7 @@ module RubyCI
     end
 
     def msg(event, data)
-      @events << ["rspec_#{event}".upcase, data]
+      @events << ["rspec_#{event}".upcase, [rspec_runner_index, data]]
     end
 
     def id(metadata)
