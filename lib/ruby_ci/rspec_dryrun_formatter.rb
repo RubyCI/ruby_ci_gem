@@ -63,7 +63,7 @@ module RubyCI
     end
   
     def start_dump(_notification)
-      output.puts
+      @output.print "\n"
     end
 
     def example_group_finished(_group_notification)
