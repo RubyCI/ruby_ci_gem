@@ -3,7 +3,7 @@
 module RubyCI
   class Configuration
     attr_accessor :run_key, :build_id, :commit_msg, :commit, :branch,
-                  :api_url, :secret_key, :author
+                  :api_url, :secret_key, :author, :rubyci_main_url, :rubyci_api_url, :orig_build_id
 
     def initialize
       # Settings defaults
@@ -15,6 +15,9 @@ module RubyCI
       self.api_url = ENV["RUBY_CI_API_URL"] || "api.fast.ci"
       self.secret_key = ENV.fetch("RUBY_CI_SECRET_KEY")
       self.author = guess_author
+      self.rubyci_main_url = ENV.fetch('RUBYCI_MAIN_URL', 'https://events.ruby.ci')
+      self.rubyci_api_url = ENV.fetch('RUBYCI_API_RB_URL', 'https://fast.ruby.ci')
+      self.orig_build_id = ENV['RBCI_ORIG_BUILD_ID']
     end
 
     def reset
