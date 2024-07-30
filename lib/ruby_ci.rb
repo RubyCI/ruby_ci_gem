@@ -152,6 +152,7 @@ module RubyCI
         rescue => e
           puts e.message
           puts e.backtrace.join("\n")
+          task&.stop
         end
       end
     end
