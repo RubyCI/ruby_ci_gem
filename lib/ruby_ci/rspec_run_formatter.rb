@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "stringio"
 
 module RubyCI
   class RspecRunFormatter
@@ -70,6 +71,7 @@ module RubyCI
     end
 
     def start(start_notification)
+      @output.print "Starting rspec run"
       # $stderr = $stdout
   
       data = {
@@ -86,6 +88,7 @@ module RubyCI
     end
   
     def close(null_notification)
+      @output.print "Finished rspec run"
       # check_heap_live_num
       msg(:gc_stat, GC.stat.merge(max_heap_live_num: @max_heap_live_num))
       unless running_only_failed? || ENV["EXTRA_SLOWER_RUN"] || running_gem_or_engine?
@@ -124,6 +127,7 @@ module RubyCI
     def example_passed(example_notification)
       metadata = example_notification.example.metadata
       broadcast_example_finished(serialize_example(metadata, "passed".freeze), example_notification.example)
+      @output.print RSpec::Core::Formatters::ConsoleCodes.wrap('.', :success)
     end
   
     def example_failed(example_notification)
@@ -135,6 +139,7 @@ module RubyCI
         serialize_example(metadata, "failed".freeze, fully_formatted),
         example_notification.example
       )
+      @output.print RSpec::Core::Formatters::ConsoleCodes.wrap('F', :failure)
     end
   
     def example_pending(example_notification)
@@ -143,6 +148,7 @@ module RubyCI
         serialize_example(metadata, "pending".freeze),
         example_notification.example
       )
+      @output.print RSpec::Core::Formatters::ConsoleCodes.wrap('*', :pending)
     end
 
     def example_group_finished(group_notification)
