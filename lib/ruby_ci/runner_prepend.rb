@@ -88,7 +88,7 @@ module RubyCI
     end
 
     def exit_code(examples_passed=false)
-      run_time = Time.now - (@rspec_started_at || 1.second.ago)
+      run_time = Time.now - (@rspec_started_at || 1.seconds.ago)
       events = @world.non_example_failure ? [['RSPEC_RUN', { failed_after: run_time, test_env_number: ENV["TEST_ENV_NUMBER"] }]] : [['RSPEC_RUN', { succeed_after: run_time, test_env_number: ENV["TEST_ENV_NUMBER"] }]]
       json_events = {
         build_id: RubyCI.configuration.orig_build_id,
