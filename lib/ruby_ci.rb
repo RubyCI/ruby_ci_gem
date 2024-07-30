@@ -121,32 +121,37 @@ module RubyCI
       connect_to_ws do
         send_msg("phx_join")
 
-        while message = connection.read
-          RubyCI.debug("ws#msg_received: #{message.inspect}")
+        begin
+          while message = connection.read
+            RubyCI.debug("ws#msg_received: #{message.inspect}")
 
-          response = message.dig(:payload, :response)
+            response = message.dig(:payload, :response)
 
-          case response&.dig(:event) || message[:event]
-          when "phx_error"
-            raise("[RubyCI] Unexpected error")
-          when "join"
-            handle_join(response)
-          when "deq_request"
-            handle_deq_request(response)
-          when "deq"
-            if (tests = response[:tests]).any?
-              result = @on[:deq].call(tests)
-              task.async do
-                send_msg("deq", result)
+            case response&.dig(:event) || message[:event]
+            when "phx_error"
+              raise("[RubyCI] Unexpected error")
+            when "join"
+              handle_join(response)
+            when "deq_request"
+              handle_deq_request(response)
+            when "deq"
+              if (tests = response[:tests]).any?
+                result = @on[:deq].call(tests)
+                task.async do
+                  send_msg("deq", result)
+                end
+              else
+                break
               end
+            when "error"
+              raise(response.inspect)
             else
-              break
+              puts response
             end
-          when "error"
-            raise(response.inspect)
-          else
-            puts response
           end
+        rescue => e
+          puts e.message
+          puts e.backtrace.join("\n")
         end
       end
     end
