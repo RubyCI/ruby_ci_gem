@@ -22,6 +22,10 @@ module RubyCI
     end
   
     def message(message_notification)
+      if message_notification.message.include?('An error occurred')
+        msg(:message, Base64.strict_encode64("\nAn error occurred#{message_notification.message}"))
+        send_events
+      end
       @output.print message_notification.message
       @output.print "\n"
     end
