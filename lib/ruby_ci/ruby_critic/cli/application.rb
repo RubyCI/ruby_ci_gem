@@ -31,7 +31,7 @@ module RubyCI
           end
 
           compressed_data = ::Base64.strict_encode64(Zlib::Deflate.deflate(report.to_json, 9))
-          events << ['ruby_critic_exit_status'.upcase, ['0', { exitstatus: status, output: '', compressed_data: compressed_data }]
+          events << ['ruby_critic_exit_status'.upcase, ['0', { exitstatus: status, output: '', compressed_data: compressed_data }]]
 
           if ENV['RBCI_REMOTE_TESTS'] == 'true'
             json_events = {
