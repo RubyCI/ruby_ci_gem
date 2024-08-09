@@ -3,6 +3,7 @@
 require_relative "ruby_ci/version"
 require_relative "ruby_ci/configuration"
 require_relative "ruby_ci/exceptions"
+require_relative "minitest/reporters/rubyci_reporter"
 
 require "async"
 require "async/http/endpoint"
