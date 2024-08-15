@@ -48,6 +48,7 @@ module Minitest
       def start
         test_count = Runnable.runnables.sum { |s| s.runnable_methods.count }
         msg('start', { test_count: test_count })
+        send_events if ENV['RBCI_REMOTE_TESTS'] == 'true'
       end
       
       def get_output
@@ -109,12 +110,36 @@ module Minitest
           test_results[path][:file_status] = file_status
         end
 
-
         if ENV['RBCI_REMOTE_TESTS'] == 'true'
           send_events
         else
           RubyCI.minitest_await
         end
+      end
+
+      def passed?
+        results = []
+        test_results.map do |path, file_results|
+          file_results['1'].each do |id, test_result|
+            next if id == :description
+            if test_result[:status] == 'failed'
+              results << false
+            else
+              results << true
+            end
+          end
+        end
+
+        pass = results.any? {|reult| !result }
+
+        if pass
+          msg('run_minitest', { succeed_after: 1 })
+        else
+          msg('run_minitest', { failed_after: 1 })
+        end
+        send_events if ENV['RBCI_REMOTE_TESTS'] == 'true'
+
+        return pass
       end
 
       def method_missing(method, *args)
@@ -225,7 +250,7 @@ module Minitest
 
       def send_events
         return unless @events.length > 0
-    
+
         json_events = {
           build_id: RubyCI.configuration.orig_build_id,
           compressed_data: Base64.strict_encode64(Zlib::Deflate.deflate(JSON.fast_generate(@events), 9)),
