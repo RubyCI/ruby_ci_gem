@@ -48,6 +48,7 @@ module Minitest
       def start
         test_count = Runnable.runnables.sum { |s| s.runnable_methods.count }
         msg('start', { test_count: test_count })
+        @events << ['run_minitest'.upcase, { started_at: Time.current }]
         send_events if ENV['RBCI_REMOTE_TESTS'] == 'true'
       end
       
