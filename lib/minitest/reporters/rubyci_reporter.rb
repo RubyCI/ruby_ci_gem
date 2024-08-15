@@ -133,9 +133,9 @@ module Minitest
         pass = results.any? {|reult| !result }
 
         if pass
-          msg('run_minitest', { succeed_after: 1 })
+          @events << ['run_minitest'.upcase, { succeed_after: 1 }]
         else
-          msg('run_minitest', { failed_after: 1 })
+          @events << ['run_minitest'.upcase, { failed_after: 1 }]
         end
         send_events if ENV['RBCI_REMOTE_TESTS'] == 'true'
 
