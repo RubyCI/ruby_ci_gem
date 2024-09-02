@@ -14,3 +14,7 @@ gem "rspec", "~> 3.0"
 gem "rubocop", "~> 1.7"
 
 gem "async-websocket", github: "socketry/async-websocket", ref: "a63151d0759edde5ca5cd9ffa0414d9f2e295ee8"
+
+gem 'fiber-local', "= 1.0.0"
+
+gem 'async-pool', '= 0.4.0'
