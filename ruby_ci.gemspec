@@ -28,8 +28,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "console", "~> 1.15.0"
   spec.add_dependency "async-websocket", '<= 0.20.0'
-  spec.add_dependency "rubycritic", ">= 4.1.0"
-  spec.add_dependency "brakeman", ">= 5.4.1"
-  spec.add_dependency "minitest-rails", ">= 5.1"
   spec.add_development_dependency "pry"
 end
