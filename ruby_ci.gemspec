@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.executables   = ["rubyci_rubycritic", "rubyci_brakeman"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "console", "~> 1.15.0"
+  spec.add_dependency "console", "~> 1.26.0"
   spec.add_dependency "async-websocket", '<= 0.20.0'
   spec.add_dependency "rubycritic", ">= 4.1.0"
   spec.add_dependency "brakeman", ">= 5.4.1"
