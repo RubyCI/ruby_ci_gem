@@ -5,8 +5,8 @@ require_relative "lib/ruby_ci/version"
 Gem::Specification.new do |spec|
   spec.name          = "ruby_ci"
   spec.version       = RubyCI::VERSION
-  spec.authors       = ["Ale ∴"]
-  spec.email         = ["ale@alexvko.com"]
+  spec.authors       = ["Nesha Zoric"]
+  spec.email         = ["no-reply@ruby.ci"]
 
   spec.summary       = "Ruby wrapper for creating RubyCI integrations"
   spec.description   = "Ruby wrapper for creating RubyCI integrations"
