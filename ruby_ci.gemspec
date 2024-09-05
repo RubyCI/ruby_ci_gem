@@ -5,8 +5,8 @@ require_relative "lib/ruby_ci/version"
 Gem::Specification.new do |spec|
   spec.name          = "ruby_ci"
   spec.version       = RubyCI::VERSION
-  spec.authors       = ["Ale ∴"]
-  spec.email         = ["ale@alexvko.com"]
+  spec.authors       = ["Nesha Zoric"]
+  spec.email         = ["no-reply@ruby.ci"]
 
   spec.summary       = "Ruby wrapper for creating RubyCI integrations"
   spec.description   = "Ruby wrapper for creating RubyCI integrations"
@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.executables   = ["rubyci_rubycritic", "rubyci_brakeman"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "console", "~> 1.15.0"
+  spec.add_dependency "console", "~> 1.26.0"
   spec.add_dependency "async-websocket", '<= 0.20.0'
   spec.add_dependency "rubycritic", ">= 4.1.0"
   spec.add_dependency "brakeman", ">= 5.4.1"
