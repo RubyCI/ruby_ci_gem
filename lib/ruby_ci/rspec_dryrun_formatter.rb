@@ -70,10 +70,10 @@ module RubyCI
       @output.print "\n"
     end
 
-    def example_group_finished(_group_notification)
+    def example_group_finished(group_notification)
       @current_group_path.pop
       if @current_group_path.empty? # its a file
-        msg(:file_examples_count, [@current_file, @current_file_count])
+        msg(:file_examples_count, [group_notification.group.metadata[:file_path].gsub("./".freeze, "".freeze), @current_file_count])
         @current_file_count = 0
         @current_file = nil
       end
