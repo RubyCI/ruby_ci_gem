@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     ruby_ci (0.2.22)
-      console (~> 1.15.0)
+      console (>= 1.10.0)
 
 GEM
   remote: https://rubygems.org/

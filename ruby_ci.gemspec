@@ -26,6 +26,6 @@ Gem::Specification.new do |spec|
   spec.executables   = ["rubyci_rubycritic", "rubyci_brakeman"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "console", "~> 1.15.0"
+  spec.add_dependency "console", ">= 1.10.0"
   spec.add_development_dependency "pry"
 end
