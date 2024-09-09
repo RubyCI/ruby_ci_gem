@@ -33,16 +33,6 @@ module Minitest
         @events = []
 
         $stdout = StringIO.new()
-
-        if ENV['RBCI_REMOTE_TESTS'] != 'true'
-          RubyCI.minitest_ws.on(:enq_request) do
-            tests
-          end
-
-          RubyCI.minitest_ws.on(:deq) do |api_tests|
-            test_results
-          end
-        end
       end
 
       def start
@@ -113,8 +103,6 @@ module Minitest
 
         if ENV['RBCI_REMOTE_TESTS'] == 'true'
           send_events
-        else
-          RubyCI.minitest_await
         end
       end
 
@@ -131,7 +119,7 @@ module Minitest
           end
         end
 
-        pass = results.any? {|reult| !result }
+        pass = results.any? {|result| !result }
 
         if pass
           @events << ['run_minitest'.upcase, { succeed_after: 1 }]
