@@ -86,6 +86,7 @@ module Minitest
         test_results[path]['1'][id][:end] = Minitest.clock_time
         test_results[path]['1'][id][:run_time] = test_results[path]['1'][id][:end] - test_results[path]['1'][id][:start]
         test_results[path]['1'][id][:status] = result_status(result).to_s
+        test_results[path][:test_counters][result_status(result)] ||= 0
         test_results[path][:test_counters][result_status(result)] += 1
         test_results[path][:run_time] += test_results[path]['1'][id][:run_time]
       end
