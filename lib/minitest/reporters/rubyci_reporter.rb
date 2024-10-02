@@ -54,14 +54,11 @@ module Minitest
       
       def before_test(test)
         $stdout = StringIO.new()
-      end
+        description = test_description(test.name)
+        path = test_path(test.class.name)
 
-      def prerecord(klass, name)
-        description = test_description(name)
-        path = test_path(klass.name)
-
-        debug("PRERECORD: #{klass.name} - #{path}")
-        test_results[path] ||= { run_time: 0.0, file_status: 'pending', test_count: 0, test_counters: { failed: 0, passed: 0, pending: 0 }, '1' => { description: klass.name } }
+        debug("PRERECORD: #{test.class.name} - #{path}")
+        test_results[path] ||= { run_time: 0.0, file_status: 'pending', test_count: 0, test_counters: { failed: 0, passed: 0, pending: 0 }, '1' => { description: test.class.name } }
         test_results[path][:test_count] += 1
         debug("PRERECORD: #{test_results.inspect}")
 
@@ -74,6 +71,9 @@ module Minitest
         tests[path] ||= { run_time: 0.0, file_status: 'pending', test_count: 0, test_counters: { failed: 0, passed: 0, pending: 0 }, '1' => {} }
         tests[path][:test_count] += 1
         tests[path]['1'][id] ||= { status: 'pending' }
+      end
+
+      def prerecord(klass, name)
       end
 
       def record(result)
