@@ -5,8 +5,8 @@ require_relative "lib/ruby_ci/version"
 Gem::Specification.new do |spec|
   spec.name          = "ruby_ci"
   spec.version       = RubyCI::VERSION
-  spec.authors       = ["Ale ∴"]
-  spec.email         = ["ale@alexvko.com"]
+  spec.authors       = ["Nesha Zoric"]
+  spec.email         = ["no-reply@ruby.ci"]
 
   spec.summary       = "Ruby wrapper for creating RubyCI integrations"
   spec.description   = "Ruby wrapper for creating RubyCI integrations"
@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features)/}) }
   end
-  spec.executables   = ["rubyci_rubycritic", "rubyci_brakeman"]
+  spec.executables   = ["rubyci_rubycritic", "rubyci_brakeman", "rubyci_bundle_audit"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "console", "~> 1.10.0"
