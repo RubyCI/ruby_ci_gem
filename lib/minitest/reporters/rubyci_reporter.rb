@@ -60,8 +60,10 @@ module Minitest
         description = test_description(name)
         path = test_path(klass.name)
 
+        debug("PRERECORD: #{klass.name} - #{path}")
         test_results[path] ||= { run_time: 0.0, file_status: 'pending', test_count: 0, test_counters: { failed: 0, passed: 0, pending: 0 }, '1' => { description: klass.name } }
         test_results[path][:test_count] += 1
+        debug("PRERECORD: #{test_results.inspect}")
 
         id = (test_results[path]['1'].keys.size + 1).to_s
         ids[description] = id
@@ -79,6 +81,9 @@ module Minitest
         description = test_description(result.name)
         id = ids[description]
         path = test_path(result.klass)
+
+        debug("RECORD: #{result.klass} - #{path}")
+        debug("RECORD: #{test_results.inspect} - #{path}")
 
         test_results[path]['1'][id][:end] = Minitest.clock_time
         test_results[path]['1'][id][:run_time] = test_results[path]['1'][id][:end] - test_results[path]['1'][id][:start]
@@ -269,6 +274,10 @@ module Minitest
         else
           :failed
         end
+      end
+
+      def debug(msg)
+        puts msg if ENV['RBCY_DEBUGGING'] == 'true'
       end
     end
   end
