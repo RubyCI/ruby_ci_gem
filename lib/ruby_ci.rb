@@ -57,14 +57,14 @@ module RubyCI
       reset_webmock = false
       if defined?(WebMock)
         reset_webmock = !WebMock.net_connect_allowed?
-        WebMock.allow_net_connect!
+        WebMock.disable!
       end
 
       uri = URI("#{RubyCI.configuration.rubyci_main_url}/api/v1/gitlab_events")
       res = Net::HTTP.post_form(uri, data)
 
       if reset_webmock
-        WebMock.disable_net_connect!
+        WebMock.enable!
       end
     end
   end
