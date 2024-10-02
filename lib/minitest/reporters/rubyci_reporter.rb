@@ -194,7 +194,7 @@ module Minitest
 
                             test.failure.backtrace.each do |l|
                               if !l["/cache/"]
-                                fully_formatted << "\n    " + cyan + l + "\033[0m"
+                                fully_formatted << "\n    \e[36m" + l + "\033[0m"
                               end
                             end
 
