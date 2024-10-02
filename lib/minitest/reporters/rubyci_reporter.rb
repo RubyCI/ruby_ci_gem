@@ -277,7 +277,7 @@ module Minitest
       end
 
       def debug(msg)
-        puts msg if ENV['RBCY_DEBUGGING'] == 'true'
+        STDOUT.puts msg if ENV['RBCY_DEBUGGING'] == 'true'
       end
     end
   end
