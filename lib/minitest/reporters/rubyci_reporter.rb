@@ -80,7 +80,7 @@ module Minitest
         id = ids[description]
         path = test_path(result.klass)
 
-        debug(result_status(result)[0].upcase)
+        debug(result_status(result).to_s[0].upcase)
 
         test_results[path]['1'][id][:end] = Minitest.clock_time
         test_results[path]['1'][id][:run_time] = test_results[path]['1'][id][:end] - test_results[path]['1'][id][:start]
