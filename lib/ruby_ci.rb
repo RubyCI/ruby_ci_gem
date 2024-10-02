@@ -42,6 +42,10 @@ module RubyCI
       post_report(report_options('brakeman', compressed_data).merge({ status: status }))
     end
 
+    def report_bundler_audit(compressed_data, status)
+      post_report(report_options('bundler_audit', compressed_data).merge({ status: status }))
+    end
+
     def rspec_await
       rspec_ws.await
     end
