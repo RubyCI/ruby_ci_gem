@@ -1,5 +1,3 @@
-require "knapsack"
-
 module Minitest
   module Reporters
     class Suite
