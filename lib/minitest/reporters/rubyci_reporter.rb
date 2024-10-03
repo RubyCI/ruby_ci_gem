@@ -1,3 +1,5 @@
+require "knapsack"
+
 module Minitest
   module Reporters
     class Suite
@@ -33,6 +35,10 @@ module Minitest
         @events = []
 
         $stdout = StringIO.new()
+
+        Minitest.after_run do
+          debug(Knapsack::Presenter.report_json)
+        end
       end
 
       def start
