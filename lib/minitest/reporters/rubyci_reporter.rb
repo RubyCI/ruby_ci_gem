@@ -35,12 +35,6 @@ module Minitest
         @events = []
 
         $stdout = StringIO.new()
-
-        Minitest.after_run do
-          debug('KNAPSACK REPORT')
-          msg('report_json', Knapsack::Presenter.report_json)
-          send_events if ENV['RBCI_REMOTE_TESTS'] == 'true'
-        end
       end
 
       def start
@@ -132,15 +126,15 @@ module Minitest
 
         failed = results.any? {|result| !result }
 
+        debug('KNAPSACK REPORT')
+        msg('report_json', Knapsack::Presenter.report_json)
+
         if failed
           @events << ['run_minitest'.upcase, { failed_after: 1 }]
         else
           @events << ['run_minitest'.upcase, { succeed_after: 1 }]
         end
         send_events if ENV['RBCI_REMOTE_TESTS'] == 'true'
-
-        debug("FAILED? #{failed}")
-        debug(Knapsack::Presenter.report_json)
         return true
       end
 
