@@ -37,7 +37,9 @@ module Minitest
         $stdout = StringIO.new()
 
         Minitest.after_run do
-          debug(Knapsack::Presenter.report_json)
+          debug('KNAPSACK REPORT')
+          msg('report_json', Knapsack::Presenter.report_json)
+          send_events if ENV['RBCI_REMOTE_TESTS'] == 'true'
         end
       end
 
