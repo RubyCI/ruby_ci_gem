@@ -127,7 +127,7 @@ module Minitest
         failed = results.any? {|result| !result }
 
         debug('KNAPSACK REPORT')
-        msg('report_json', Knapsack::Presenter.report_json)
+        msg('report_json', { line: Base64.strict_encode64(Knapsack::Presenter.report_json) })
 
         if failed
           @events << ['run_minitest'.upcase, { failed_after: 1 }]
