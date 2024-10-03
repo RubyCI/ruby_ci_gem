@@ -130,16 +130,18 @@ module Minitest
           end
         end
 
-        pass = results.any? {|result| !result }
+        failed = results.any? {|result| !result }
 
-        if pass
-          @events << ['run_minitest'.upcase, { succeed_after: 1 }]
-        else
+        if failed
           @events << ['run_minitest'.upcase, { failed_after: 1 }]
+        else
+          @events << ['run_minitest'.upcase, { succeed_after: 1 }]
         end
         send_events if ENV['RBCI_REMOTE_TESTS'] == 'true'
 
-        return pass
+        debug("FAILED? #{failed}")
+        debug(Knapsack::Presenter.report_json)
+        return true
       end
 
       def method_missing(method, *args)
