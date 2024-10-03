@@ -232,7 +232,7 @@ module RubyCI
         data.merge(output_inside: get_output, output_before: @output_before)
       ])
   
-      send_events if @should_send_events
+      send_events if @should_send_events && (@events.size > 100)
     end
 
     def get_output
