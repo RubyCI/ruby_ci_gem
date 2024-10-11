@@ -24,14 +24,6 @@ module RubyCI
       @events = []
 
       $stdout = StringIO.new()
-
-      @log_thread = Thread.new do
-        loop do
-          sleep 10
-          check_heap_live_num
-          @should_send_events = true
-        end
-      end
     end
 
     def time_now
@@ -48,8 +40,6 @@ module RubyCI
     end
 
     def send_events
-      @should_send_events = false
-  
       if @events.length > 0
         json_events = {
           build_id: RubyCI.configuration.orig_build_id,
@@ -232,7 +222,7 @@ module RubyCI
         data.merge(output_inside: get_output, output_before: @output_before)
       ])
   
-      send_events if @should_send_events && (@events.size > 100)
+      send_events if @events.size > 100
     end
 
     def get_output
