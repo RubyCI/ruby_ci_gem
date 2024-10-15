@@ -112,12 +112,14 @@ module RubyCI
   
     def example_started(example_notification)
       @output_before = get_output
+      debug("#{DateTime.now.strftime('%Y-%m-%d %H:%M:%S')} - started - #{path_with_file(example_notification.example.example_group)}:#{example_notification.example.metadata[:line_number].to_s}")
     end
   
     def example_passed(example_notification)
       metadata = example_notification.example.metadata
       broadcast_example_finished(serialize_example(metadata, "passed".freeze), example_notification.example)
       @output.print RSpec::Core::Formatters::ConsoleCodes.wrap('.', :success)
+      debug("#{DateTime.now.strftime('%Y-%m-%d %H:%M:%S')} - ended - #{path_with_file(example_notification.example.example_group)}:#{example_notification.example.metadata[:line_number].to_s}")
     end
   
     def example_failed(example_notification)
@@ -130,6 +132,7 @@ module RubyCI
         example_notification.example
       )
       @output.print RSpec::Core::Formatters::ConsoleCodes.wrap('F', :failure)
+      debug("#{DateTime.now.strftime('%Y-%m-%d %H:%M:%S')} - ended - #{path_with_file(example_notification.example.example_group)}:#{example_notification.example.metadata[:line_number].to_s}")
     end
   
     def example_pending(example_notification)
@@ -139,6 +142,7 @@ module RubyCI
         example_notification.example
       )
       @output.print RSpec::Core::Formatters::ConsoleCodes.wrap('*', :pending)
+      debug("#{DateTime.now.strftime('%Y-%m-%d %H:%M:%S')} - ended - #{path_with_file(example_notification.example.example_group)}:#{example_notification.example.metadata[:line_number].to_s}")
     end
 
     def example_group_finished(group_notification)
@@ -159,6 +163,10 @@ module RubyCI
     end
 
     private
+
+    def debug(msg)
+      STDOUT.puts msg if ENV['RBCY_DEBUGGING'] == 'true'
+    end
 
     def running_gem_or_engine?
       !!ENV["DIR_PREFIX"]
