@@ -57,6 +57,8 @@ module RubyCI
       reset_webmock = false
       if defined?(WebMock)
         reset_webmock = !WebMock.net_connect_allowed?
+        wm_allow = WebMock::Config.instance.allow
+        wm_localhost = WebMock::Config.instance.allow_localhost
         WebMock.allow_net_connect!
       end
 
@@ -64,7 +66,7 @@ module RubyCI
       res = Net::HTTP.post_form(uri, data)
 
       if reset_webmock
-        WebMock.disable_net_connect!
+        WebMock.disable_net_connect!(allow_localhost: wm_localhost, allow: wm_allow)
       end
     end
   end
